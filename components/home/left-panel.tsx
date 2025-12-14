@@ -13,7 +13,9 @@ import { useConversationStore } from "@/store/chat-store"
 import { api } from "@/convex/_generated/api"
 
 const LeftPanel = () => {
-  const { isAuthenticated, isLoading } = useConvexAuth()
+  // const { isAuthenticated, isLoading } = useConvexAuth()
+  const isAuthenticated = true
+  const isLoading = false
   const conversations = useQuery(
     api.conversations.getMyConversations,
     isAuthenticated ? undefined : "skip"
