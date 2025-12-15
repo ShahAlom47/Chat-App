@@ -10,34 +10,14 @@ import { useConvexAuth, useQuery } from "convex/react"
 
 import { useEffect } from "react"
 import { useConversationStore } from "@/store/chat-store"
-import { api } from "@/convex/_generated/api"
 
 const LeftPanel = () => {
-  // const { isAuthenticated, isLoading } = useConvexAuth()
-  const isAuthenticated = true
-  const isLoading = false
-  const conversations = useQuery(
-    api.conversations.getMyConversations,
-    isAuthenticated ? undefined : "skip"
-  )
+  
+const isAuthenticated = true;
 
-  const { selectedConversation, setSelectedConversation } =
-    useConversationStore()
+const conversations = []
+ 
 
-  useEffect(() => {
-    const conversationIds = conversations?.map(
-      (conversation) => conversation._id
-    )
-    if (
-      selectedConversation &&
-      conversationIds &&
-      !conversationIds.includes(selectedConversation._id)
-    ) {
-      setSelectedConversation(null)
-    }
-  }, [conversations, selectedConversation, setSelectedConversation])
-
-  if (isLoading) return null
 
   return (
     <div className="w-1/4 border-gray-600 border-r">
@@ -70,11 +50,7 @@ const LeftPanel = () => {
 
       {/* Chat List */}
       <div className="my-3 flex flex-col gap-0 max-h-[80%] overflow-auto">
-        {/* Conversations will go here*/}
-        {conversations?.map((conversation) => (
-          <Conversation key={conversation._id} conversation={conversation} />
-        ))}
-
+    
         {conversations?.length === 0 && (
           <>
             <p className="text-center text-gray-500 text-sm mt-3">
