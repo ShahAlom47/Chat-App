@@ -3,12 +3,42 @@ import { v } from "convex/values";
 
 export default defineSchema({
   users: defineTable({
+    // Auth related
+    userId: v.string(), // Clerk / Auth.js ID
     name: v.string(),
     email: v.string(),
-  }),
+    image: v.optional(v.string()),
+
+    // Role & status
+    role: v.union(
+      v.literal("admin"),
+      v.literal("user")
+    ),
+
+    isOnline: v.boolean(),
+    lastSeen: v.number(), // Date.now()
+
+    // Profile
+    about: v.optional(v.string()),
+    phone: v.optional(v.string()),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_email", ["email"]),
 
   messages: defineTable({
+    senderId: v.id("users"),
+    receiverId: v.id("users"),
+
     text: v.string(),
-    userId: v.id("users"),
-  }),
+    type: v.union(
+      v.literal("text"),
+      v.literal("image"),
+      v.literal("file")
+    ),
+
+    isSeen: v.boolean(),
+    createdAt: v.number(),
+  })
+    .index("by_receiver", ["receiverId"])
+    .index("by_sender", ["senderId"]),
 });
