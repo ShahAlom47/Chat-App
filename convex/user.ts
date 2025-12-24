@@ -2,7 +2,7 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
 /**
- * Create user after login (Clerk / NextAuth)
+ * ✅ Add a new user
  */
 export const createUser = mutation({
   args: {
@@ -12,34 +12,46 @@ export const createUser = mutation({
     image: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // আগেই user আছে কিনা চেক
     const existingUser = await ctx.db
       .query("users")
       .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-      .unique();
+      .first();
 
-    if (existingUser) return existingUser;
+    if (existingUser) {
+      return existingUser._id; // আগেই থাকলে নতুন add করবে না
+    }
 
-    return await ctx.db.insert("users", {
+    // নতুন user add
+    const userId = await ctx.db.insert("users", {
       userId: args.userId,
       name: args.name,
       email: args.email,
       image: args.image,
+
       role: "user",
       isOnline: true,
       lastSeen: Date.now(),
     });
+
+    return userId;
   },
 });
 
+
 /**
- * Get current logged in user
+ * ✅ Get user by userId
  */
 export const getUserByUserId = query({
-  args: { userId: v.string() },
+  args: {
+    userId: v.string(),
+  },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const user = await ctx.db
       .query("users")
       .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-      .unique();
+      .first();
+
+    return user;
   },
 });
