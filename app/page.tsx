@@ -1,41 +1,18 @@
+import AddUser from "@/components/AddUser";
 import LeftPanel from "@/components/home/left-panel"
 import RightPanel from "@/components/home/right-panel"
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useTheme } from "next-themes"
 
-export default function Home({ senderId, receiverId }: { senderId: string; receiverId: string } ) {
-
-   const messages = useQuery(api.messages.getMessages, {
-    userA: senderId,
-    userB: receiverId,
-  });
-
-  const sendMessage = useMutation(api.messages.sendMessage);
+export default function Home() {
 
   return (
     <main className="m-5">
       <div className="flex overflow-y-hidden h-[calc(100vh-50px)] max-w-[1700px] mx-auto bg-left-panel">
      Home 
         <div className="fixed top-0 left-0 w-full h-36 bg-green-primary dark:bg-transparent -z-30" />
-         <div>
-      {messages?.map((msg) => (
-        <p key={msg._id}>{msg.text}</p>
-      ))}
-
-      <button
-        onClick={() =>
-          sendMessage({
-            senderId,
-            receiverId,
-            text: "Hello 👋",
-            type: "text",
-          })
-        }
-      >
-        Send
-      </button>
-    </div>
+      <AddUser></AddUser>
       </div>
     </main>
   )
