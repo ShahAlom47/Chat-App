@@ -15,7 +15,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as messages from "../messages.js";
-import type * as user from "../user.js";
+import type * as user from "../users.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.

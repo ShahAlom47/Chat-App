@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 export default function AddUser() {
-  const createUser = useMutation(api.users.createUser);
+  const createUser = useMutation(api.user.createUser);
 
   const user = useQuery(api.user.getUserByUserId, {
     userId: "test-user-1",
