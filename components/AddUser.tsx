@@ -10,7 +10,7 @@ export default function AddUser() {
   const user = useQuery(api.user.getUserByUserId, {
     userId: "test-user-3",
   });
-
+ 
   const handleAddUser = async () => {
     const result = await createUser({
       userId: "test-user-3",
