@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
@@ -45,6 +46,7 @@ export const syncUser = mutation({
         name: args.name || "Unknown",
         email: args.email,
         image: args.image,
+        password: "", // empty password for OAuth users
         role: "user",
         isOnline: true,
         lastSeen: now,
@@ -62,5 +64,44 @@ export const syncUser = mutation({
         message: "Something went wrong while syncing user",
       };
     }
+  },
+});
+
+
+
+
+
+export const register = mutation({
+  args: {
+    name: v.string(),
+    email: v.string(),
+    password: v.string(),
+  },
+  handler: async (ctx, { name, email, password }) => {
+    // check if user exists
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_email", q => q.eq("email", email))
+      .first();
+
+    if (existing) {
+      return { success: false, message: "Email already exists" };
+    }
+
+    // hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // insert user
+    await ctx.db.insert("users", {
+      userId: crypto.randomUUID(),
+      name,
+      email,
+      password: hashedPassword,
+      role: "user",
+      isOnline: false,
+      lastSeen: Date.now(),
+    });
+
+    return { success: true };
   },
 });
