@@ -10,3 +10,16 @@ export const getUserByUserId = query({
       .first();
   },
 });
+
+
+
+
+export const getByEmail = query({
+  args: { email: v.string() },
+  handler: async (ctx, { email }) => {
+    return await ctx.db
+      .query("users")
+      .withIndex("by_email", q => q.eq("email", email))
+      .first();
+  },
+});
