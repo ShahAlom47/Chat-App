@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 export default function Register() {
   const router = useRouter();
+  const createUser = useMutation(api.user.createUser);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -19,7 +21,7 @@ export default function Register() {
 
     try {
       const userId = crypto.randomUUID();
-      await api.user.createUser.mutate({
+      await createUser({
         userId,
         name,
         email,
