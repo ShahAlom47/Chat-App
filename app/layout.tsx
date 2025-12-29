@@ -3,6 +3,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "react-hot-toast"
 import ConvexClientProvider from "@/providers/ConvexClientProvider"
+import Navbar from "@/components/Navbar"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
@@ -24,7 +25,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         > */}
-              <ConvexClientProvider>{children}</ConvexClientProvider>
+              <ConvexClientProvider>
+                <Navbar></Navbar>
+                {children}
+                </ConvexClientProvider>
      
             <Toaster />
           {/* </ConvexClientProvider> */}

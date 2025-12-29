@@ -1,3 +1,4 @@
+
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
@@ -54,4 +55,10 @@ export const getUserByUserId = query({
 
     return user;
   },
+});
+export const getAllUsers = query({
+  handler: async (ctx) => {
+    const users = await ctx.db.query("users").collect();
+    return users;
+  }
 });

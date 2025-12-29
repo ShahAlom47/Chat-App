@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 
 export default function Register() {
   const router = useRouter();
-  const createUser = useMutation(api.user.createUser);
+  const createUser = useMutation(api.users.createUser);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

@@ -5,11 +5,13 @@ import { useMutation, useQuery } from "convex/react";
 
 export default function AddUser() {
   // ✅ users (plural) — folder name অনুযায়ী
-  const createUser = useMutation(api.user.createUser);
+  const createUser = useMutation(api.users.createUser);
 
-  const user = useQuery(api.user.getUserByUserId, {
+  const user = useQuery(api.users.getUserByUserId, {
     userId: "test-user-3",
   });
+  const allUsers = useQuery(api.users.getAllUsers, {});
+  console.log(allUsers)
  
   const handleAddUser = async () => {
     const result = await createUser({
