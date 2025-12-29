@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import toast from "react-hot-toast";
 
 export default function Register() {
   const router = useRouter();
@@ -21,14 +22,16 @@ export default function Register() {
 
     try {
       const userId = crypto.randomUUID();
-      await createUser({
+      const res = await createUser({
         userId,
         name,
         email,
       });
-
+console.log(res)
+toast.success("Registration successful!");
       // registration success → redirect to login
       router.push("/login");
+
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {
