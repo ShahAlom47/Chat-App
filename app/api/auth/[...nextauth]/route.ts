@@ -3,7 +3,6 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { convex } from "@/lib/convexClient";
-import { api } from "@/convex/_generated/api";
 
 // ↑ convex client (server-side) already setup আছে ধরে নিচ্ছি
 
@@ -49,7 +48,10 @@ export const authOptions: NextAuthOptions = {
         const user = await convex.query("users:getByEmail", {
           email: credentials.email,
         });
+
  console.log(user)
+ 
+
         if (!user) {
           throw new Error("User not found");
         }

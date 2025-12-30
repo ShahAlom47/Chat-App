@@ -56,19 +56,19 @@ export const getUserByUserId = query({
     return user;
   },
 });
-export const getUserByUserEmail = query({
-  args: {
-    email: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_email", (q) => q.eq("email", args.email))
-      .first();
+// convex/users.ts
 
-    return user;
+
+export const getByEmail = query({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("users")
+      .withIndex("by_email", q => q.eq("email", args.email))
+      .unique();
   },
 });
+
 export const getAllUsers = query({
   handler: async (ctx) => {
     const users = await ctx.db.query("users").collect();
