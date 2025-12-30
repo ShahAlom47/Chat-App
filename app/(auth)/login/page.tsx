@@ -8,12 +8,21 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    await signIn("credentials", {
-      email,
-      password,
-      callbackUrl: "/",
-    });
-  };
+    console.log(email,password)
+  const res = await signIn("credentials", {
+    email,
+    password,
+    redirect: false, // 🔴 MUST
+  });
+
+  console.log(res);
+
+  if (res?.error) {
+    alert(res.error);
+  } else {
+    window.location.href = "/";
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center">

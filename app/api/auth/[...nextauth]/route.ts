@@ -1,4 +1,3 @@
-
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -47,10 +46,9 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Convex থেকে user আনা
-       const user = await convex.query("users:getByEmail", {
-  email: credentials.email,
-});
-
+        const user = await convex.query("users:getByEmail", {
+          email: credentials.email,
+        });
 
         if (!user) {
           throw new Error("User not found");
@@ -66,10 +64,14 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid password");
         }
 
+        console.log(user.password);
+console.log(credentials.password);
+
+
         // NextAuth user object
         return {
-          id: user.userId,
-          name: user.name,
+          id: user._id, // 🔴 userId না, _id
+          name: user.name ?? "",
           email: user.email,
         };
       },

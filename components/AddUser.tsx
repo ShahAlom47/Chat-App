@@ -32,9 +32,21 @@ export default function AddUser() {
         Add User
       </button>
 
-      <pre className="bg-gray-100 p-4 text-sm rounded">
+      {/* <pre className="bg-gray-100 p-4 text-sm rounded">
         {JSON.stringify(user, null, 2)}
-      </pre>
+      </pre> */}
+
+      {
+        allUsers ? (
+          <ul>
+            {allUsers.map((user) => ( 
+              <li key={user._id}>
+                {user.name} ({user.email})
+              </li> 
+            ))}
+          </ul>
+        ) : <p>Loading users...</p>
+      }
     </div>
   );
 }
