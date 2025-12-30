@@ -56,6 +56,19 @@ export const getUserByUserId = query({
     return user;
   },
 });
+export const getUserByUserEmail = query({
+  args: {
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+
+    return user;
+  },
+});
 export const getAllUsers = query({
   handler: async (ctx) => {
     const users = await ctx.db.query("users").collect();
