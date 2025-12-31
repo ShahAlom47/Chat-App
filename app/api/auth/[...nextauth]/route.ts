@@ -4,8 +4,9 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { convex } from "@/lib/convexClient";
 
-// ↑ convex client (server-side) already setup আছে ধরে নিচ্ছি
-
+/* =========================
+   Type Augmentation
+========================= */
 declare module "next-auth" {
   interface Session {
     user: {
@@ -23,15 +24,18 @@ declare module "next-auth/jwt" {
   }
 }
 
+/* =========================
+   Auth Options
+========================= */
 export const authOptions: NextAuthOptions = {
   providers: [
-    // 🔹 GOOGLE (optional – চাইলে রাখতে পারো)
+    // 🔹 Google (optional)
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
 
-    // 🔹 EMAIL + PASSWORD
+    // 🔹 Email + Password
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -40,39 +44,34 @@ export const authOptions: NextAuthOptions = {
       },
 
       async authorize(credentials) {
+        // 1️⃣ Basic validation
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Missing email or password");
+          throw new Error("Missing credentials");
         }
 
-        // Convex থেকে user আনা
+        // 2️⃣ Get user from Convex
         const user = await convex.query("users:getByEmail", {
           email: credentials.email,
         });
 
- console.log(user)
- 
-
-        if (!user) {
-          throw new Error("User not found");
+        // 3️⃣ User / password existence check
+        if (!user || !user.password) {
+          throw new Error("Invalid email or password");
         }
 
-        // ⚠️ এখানে ধরে নিচ্ছি password field Convex এ আছে
+        // 4️⃣ Password compare
         const isValid = await bcrypt.compare(
           credentials.password,
           user.password
         );
 
         if (!isValid) {
-          throw new Error("Invalid password");
+          throw new Error("Invalid email or password");
         }
 
-        console.log(user.password);
-console.log(credentials.password);
-
-
-        // NextAuth user object
+        // 5️⃣ Return user for NextAuth
         return {
-          id: user._id, // 🔴 userId না, _id
+          id: user._id, // ✅ Convex document id
           name: user.name ?? "",
           email: user.email,
         };
@@ -93,12 +92,15 @@ console.log(credentials.password);
     },
 
     async session({ session, token }) {
-      if (session.user) {
+      if (session.user && token.userId) {
         session.user.id = token.userId as string;
-        session.user.email = token.email!;
       }
       return session;
     },
+  },
+
+  pages: {
+    signIn: "/login", // optional but recommended
   },
 };
 
