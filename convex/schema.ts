@@ -8,7 +8,7 @@ export default defineSchema({
     name: v.string(),
     email: v.string(),
     image: v.optional(v.string()),
-    password: v.optional(v.string()), // hashed password
+    password: v.string(), // hashed password
 
     // Role & status
     role: v.union(

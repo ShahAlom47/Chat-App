@@ -1,43 +1,51 @@
 
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import bcrypt from "bcryptjs";
 
-/**
- * ✅ Add a new user
- */
-export const createUser = mutation({
+/* =========================
+   REGISTER USER
+========================= */
+export const register = mutation({
   args: {
-    userId: v.string(),
     name: v.string(),
     email: v.string(),
-    image: v.optional(v.string()),
+    password: v.string(),
   },
   handler: async (ctx, args) => {
-    // আগেই user আছে কিনা চেক
+    // check existing user
     const existingUser = await ctx.db
       .query("users")
-      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-      .first();
+      .withIndex("by_email", q => q.eq("email", args.email))
+      .unique();
 
     if (existingUser) {
-      return existingUser._id; // আগেই থাকলে নতুন add করবে না
+      throw new Error("User already exists");
     }
 
-    // নতুন user add
+    const hashedPassword = await bcrypt.hash(args.password, 10);
+
     const userId = await ctx.db.insert("users", {
-      userId: args.userId,
+      userId: args.email,
       name: args.name,
       email: args.email,
-      image: args.image,
-
+      password: hashedPassword,
       role: "user",
       isOnline: true,
       lastSeen: Date.now(),
     });
 
-    return userId;
+    return { userId };
   },
 });
+
+
+
+
+
+/**
+ * ✅ Add a new user
+ */
 
 
 /**

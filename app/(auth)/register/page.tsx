@@ -26,6 +26,7 @@ export default function Register() {
         userId,
         name,
         email,
+        password,
       });
 console.log(res)
 toast.success("Registration successful!");
