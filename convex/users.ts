@@ -10,32 +10,26 @@ export const register = mutation({
   args: {
     name: v.string(),
     email: v.string(),
-    password: v.string(),
+    hashedPassword: v.string(),
   },
   handler: async (ctx, args) => {
-    // check existing user
-    const existingUser = await ctx.db
+    const user = await ctx.db
       .query("users")
       .withIndex("by_email", q => q.eq("email", args.email))
       .unique();
 
-    if (existingUser) {
-      throw new Error("User already exists");
-    }
+    if (user) throw new Error("User already exists");
 
-    const hashedPassword = await bcrypt.hash(args.password, 10);
-
-    const userId = await ctx.db.insert("users", {
-      userId: args.email,
+    return await ctx.db.insert("users", {
+      userId: crypto.randomUUID(),
       name: args.name,
       email: args.email,
-      password: hashedPassword,
+      password: args.hashedPassword,
       role: "user",
-      isOnline: true,
+      isOnline: false,
       lastSeen: Date.now(),
+      
     });
-
-    return { userId };
   },
 });
 
