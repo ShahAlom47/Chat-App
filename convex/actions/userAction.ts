@@ -10,12 +10,13 @@ export const registerAction = action({
     password: v.string(),
   },
   handler: async (ctx, args) => {
-    const hashedPassword = await bcrypt.hash(args.password, 10);
+    const hashed = await bcrypt.hash(args.password, 10);
 
-    return await ctx.runMutation(api.users.register, {
+    return await ctx.runMutation(api.users.createUser, {
       name: args.name,
       email: args.email,
-      hashedPassword,
+      password: hashed,
     });
   },
-});
+} as const);
+
