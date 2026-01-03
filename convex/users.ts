@@ -1,4 +1,4 @@
-"use node"; // Node.js required for bcrypt
+// convex/users.ts
 
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
@@ -15,10 +15,18 @@ export const createUser = mutation({
     password: v.string(),
   },
   handler: async (ctx, args) => {
-    // 1️⃣ Hash password before inserting
-    const hashedPassword = await bcrypt.hash(args.password, 10);
+    // 1️⃣ Convert password to Uint8Array
+    const encoder = new TextEncoder();
+    const data = encoder.encode(args.password);
 
-    // 2️⃣ Insert user into DB
+    // 2️⃣ Hash using SHA-256
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashedPassword = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
+    // 3️⃣ Insert into DB
     await ctx.db.insert("users", {
       userId: crypto.randomUUID(),
       name: args.name,
@@ -32,6 +40,7 @@ export const createUser = mutation({
     return { success: true };
   },
 });
+
 
 /* =========================
    GET USER BY userId
