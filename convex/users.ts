@@ -64,16 +64,45 @@ export const getUserByUserId = query({
    GET USER BY EMAIL
 ========================= */
 
+// getByEmail (query)
 export const getByEmail = query({
   args: { email: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("users")
-      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .withIndex("by_email", q => q.eq("email", args.email))
       .unique();
   },
 });
 
+// Optional loginUser action for password validation
+export const loginUser = query({
+  args: { email: v.string(), password: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", q => q.eq("email", args.email))
+      .unique();
+
+    if (!user) return null;
+
+    // Hash entered password same as register
+    const encoder = new TextEncoder();
+    const data = encoder.encode(args.password);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+
+    if (hashedPassword !== user.password) return null;
+
+    return {
+      userId: user.userId,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+  }
+});
 /* =========================
    GET ALL USERS
 ========================= */
