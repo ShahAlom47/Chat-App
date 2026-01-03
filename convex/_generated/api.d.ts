@@ -14,7 +14,6 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as actions_register from "../actions/register.js";
 import type * as messages from "../messages.js";
 import type * as users from "../users.js";
 
@@ -27,7 +26,6 @@ import type * as users from "../users.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  "actions/register": typeof actions_register;
   messages: typeof messages;
   users: typeof users;
 }>;

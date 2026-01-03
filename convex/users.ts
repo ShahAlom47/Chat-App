@@ -1,3 +1,4 @@
+"use node"; // Node.js required for bcrypt
 
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
@@ -7,8 +8,6 @@ import bcrypt from "bcryptjs";
    REGISTER USER
 ========================= */
 
-
-
 export const createUser = mutation({
   args: {
     name: v.string(),
@@ -16,11 +15,15 @@ export const createUser = mutation({
     password: v.string(),
   },
   handler: async (ctx, args) => {
+    // 1️⃣ Hash password before inserting
+    const hashedPassword = await bcrypt.hash(args.password, 10);
+
+    // 2️⃣ Insert user into DB
     await ctx.db.insert("users", {
       userId: crypto.randomUUID(),
       name: args.name,
       email: args.email,
-      password: args.password,
+      password: hashedPassword, // ✅ hashed password
       role: "user",
       isOnline: false,
       lastSeen: Date.now(),
@@ -30,18 +33,10 @@ export const createUser = mutation({
   },
 });
 
+/* =========================
+   GET USER BY userId
+========================= */
 
-
-
-
-/**
- * ✅ Add a new user
- */
-
-
-/**
- * ✅ Get user by userId
- */
 export const getUserByUserId = query({
   args: {
     userId: v.string(),
@@ -55,22 +50,28 @@ export const getUserByUserId = query({
     return user;
   },
 });
-// convex/users.ts
 
+/* =========================
+   GET USER BY EMAIL
+========================= */
 
 export const getByEmail = query({
   args: { email: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("users")
-      .withIndex("by_email", q => q.eq("email", args.email))
+      .withIndex("by_email", (q) => q.eq("email", args.email))
       .unique();
   },
 });
+
+/* =========================
+   GET ALL USERS
+========================= */
 
 export const getAllUsers = query({
   handler: async (ctx) => {
     const users = await ctx.db.query("users").collect();
     return users;
-  }
+  },
 });
