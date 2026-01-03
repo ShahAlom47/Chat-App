@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useAction } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -10,7 +10,7 @@ type LoginForm = { email: string; password: string };
 
 export default function Login() {
   const router = useRouter();
-  const loginUser = useAction(api.users.loginUser);
+  const loginUser = useQuery(api.users.loginUser, {});
 
   const { register, handleSubmit } = useForm<LoginForm>();
 
