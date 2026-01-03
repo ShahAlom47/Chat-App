@@ -6,30 +6,27 @@ import bcrypt from "bcryptjs";
 /* =========================
    REGISTER USER
 ========================= */
-export const register = mutation({
+
+
+
+export const createUser = mutation({
   args: {
     name: v.string(),
     email: v.string(),
-    hashedPassword: v.string(),
+    password: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_email", q => q.eq("email", args.email))
-      .unique();
-
-    if (user) throw new Error("User already exists");
-
-    return await ctx.db.insert("users", {
+    await ctx.db.insert("users", {
       userId: crypto.randomUUID(),
       name: args.name,
       email: args.email,
-      password: args.hashedPassword,
+      password: args.password,
       role: "user",
       isOnline: false,
       lastSeen: Date.now(),
-      
     });
+
+    return { success: true };
   },
 });
 

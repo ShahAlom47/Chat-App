@@ -12,11 +12,10 @@ export const registerAction = action({
   handler: async (ctx, args) => {
     const hashed = await bcrypt.hash(args.password, 10);
 
-    return await ctx.runMutation(api.users.createUser, {
+    return ctx.runMutation(api.users.createUser, {
       name: args.name,
       email: args.email,
       password: hashed,
     });
   },
-} as const);
-
+});
