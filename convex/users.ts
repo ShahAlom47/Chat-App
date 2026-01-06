@@ -76,8 +76,11 @@ export const getByEmail = query({
 });
 
 // Optional loginUser action for password validation
-export const loginUser = query({
-  args: { email: v.string(), password: v.string() },
+export const loginUser = mutation({
+  args: {
+    email: v.string(),
+    password: v.string(),
+  },
   handler: async (ctx, args) => {
     const user = await ctx.db
       .query("users")
@@ -86,22 +89,16 @@ export const loginUser = query({
 
     if (!user) return null;
 
-    // Hash entered password same as register
-    const encoder = new TextEncoder();
-    const data = encoder.encode(args.password);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-
-    if (hashedPassword !== user.password) return null;
+    const isValid = await bcrypt.compare(args.password, user.password);
+    if (!isValid) return null;
 
     return {
-      userId: user.userId,
+      userId: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
     };
-  }
+  },
 });
 /* =========================
    GET ALL USERS
