@@ -76,12 +76,14 @@ export const getByEmail = query({
 });
 
 // Optional loginUser action for password validation
+
 export const loginUser = mutation({
   args: {
     email: v.string(),
     password: v.string(),
   },
   handler: async (ctx, args) => {
+    // 1️⃣ Find user
     const user = await ctx.db
       .query("users")
       .withIndex("by_email", q => q.eq("email", args.email))
@@ -89,9 +91,20 @@ export const loginUser = mutation({
 
     if (!user) return null;
 
-    const isValid = await bcrypt.compare(args.password, user.password);
-    if (!isValid) return null;
+    // 2️⃣ Hash incoming password (same way as register)
+    const encoder = new TextEncoder();
+    const data = encoder.encode(args.password);
 
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashedPassword = hashArray
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join("");
+
+    // 3️⃣ Compare hashes
+    if (hashedPassword !== user.password) return null;
+
+    // 4️⃣ Return safe user data
     return {
       userId: user._id,
       name: user.name,
