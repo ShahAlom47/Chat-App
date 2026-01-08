@@ -33,7 +33,7 @@ export default function Login() {
       localStorage.setItem("user", JSON.stringify(user));
 
       toast.success("Login successful 🎉");
-      router.push("/dashboard");
+      router.push("/");
     } catch (error) {
       toast.error("Something went wrong");
     }
