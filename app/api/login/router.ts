@@ -8,7 +8,7 @@ import crypto from "crypto";
 export async function POST(req: Request) {
   const { email, password } = await req.json();
 
-  const user = await convex.mutation(api.auth.loginUser, {
+  const user = await convex.mutation(api.users.loginUser, {
     email,
     password,
   });
