@@ -4,9 +4,26 @@ import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
   const session = req.cookies.get("session");
-  console.log(session,'session ')
+  const pathname = req.nextUrl.pathname;
 
-  // if (!session) {
-  //   return NextResponse.redirect(new URL("/", req.url));
-  // }
+  // 🔒 Protected routes
+  const protectedRoutes = ["/dashboard", "/profile"];
+
+  if (protectedRoutes.some(route => pathname.startsWith(route))) {
+    if (!session) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+  }
+
+  // 🔁 logged-in user যেন login/register এ না যায়
+  if ((pathname === "/login" || pathname === "/register") && session) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
+  return NextResponse.next();
 }
+
+// middleware কোন কোন route এ চলবে
+export const config = {
+  matcher: ["/dashboard/:path*", "/profile/:path*", "/login", "/register"],
+};
