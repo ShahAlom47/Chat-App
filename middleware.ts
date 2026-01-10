@@ -4,8 +4,9 @@ import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
   const session = req.cookies.get("session");
+  console.log(session,'session ')
 
-  if (!session) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
+  // if (!session) {
+  //   return NextResponse.redirect(new URL("/", req.url));
+  // }
 }

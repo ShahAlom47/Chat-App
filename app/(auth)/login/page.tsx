@@ -20,24 +20,27 @@ export default function Login() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginForm>();
+const onSubmit = async (data: LoginForm) => {
+  try {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-  const onSubmit = async (data: LoginForm) => {
-    try {
-      const user = await loginUser(data);
-
-      if (!user) {
-        toast.error("Invalid email or password");
-        return;
-      }
-
-      localStorage.setItem("user", JSON.stringify(user));
-
-      toast.success("Login successful 🎉");
-      router.push("/");
-    } catch (error) {
-      toast.error("Something went wrong");
+    if (!res.ok) {
+      toast.error("Invalid email or password");
+      return;
     }
-  };
+
+    toast.success("Login successful 🎉");
+    router.push("/");
+  } catch (error) {
+    toast.error("Something went wrong");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 px-4">
