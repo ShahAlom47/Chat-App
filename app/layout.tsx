@@ -4,6 +4,7 @@ import "./globals.css"
 import { Toaster } from "react-hot-toast"
 import ConvexClientProvider from "@/providers/ConvexClientProvider"
 import Navbar from "@/components/Navbar"
+import { AuthProvider } from "@/providers/AuthProvider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
@@ -26,8 +27,10 @@ export default function RootLayout({
           disableTransitionOnChange
         > */}
               <ConvexClientProvider>
+                   <AuthProvider>
                 <Navbar></Navbar>
                 {children}
+                </AuthProvider>
                 </ConvexClientProvider>
      
             <Toaster />

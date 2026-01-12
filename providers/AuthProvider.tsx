@@ -13,16 +13,29 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/me")
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        setUser(data?.user || null);
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/me", { cache: "no-store" });
+
+        if (!res.ok) {
+          setUser(null);
+          return;
+        }
+
+        const data = await res.json();
+        setUser(data.user ?? null);
+      } catch {
+        setUser(null);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    checkAuth();
   }, []);
 
   return (
@@ -32,4 +45,5 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ✅ named export
 export const useAuth = () => useContext(AuthContext);

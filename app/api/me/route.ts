@@ -6,10 +6,12 @@ export async function GET() {
   const session = cookies().get("session");
 
   if (!session) {
-    return NextResponse.json({ user: null }, { status: 401 });
+    return NextResponse.json(
+      { user: null },
+      { status: 200 } // ⚠️ 401 না
+    );
   }
 
-  // future: session → user lookup from DB
   return NextResponse.json({
     user: { loggedIn: true },
   });

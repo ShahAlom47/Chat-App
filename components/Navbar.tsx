@@ -1,7 +1,12 @@
+"use client"
+import { useAuth } from "@/providers/AuthProvider";
 import Link from "next/link";
 import React from "react";
 
 const Navbar = () => {
+
+   const { user, loading } = useAuth();
+   console.log(user, loading);
   return (
     <nav className="w-full bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
