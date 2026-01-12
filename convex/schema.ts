@@ -26,6 +26,15 @@ export default defineSchema({
     .index("by_userId", ["userId"])
     .index("by_email", ["email"]),
 
+    sessions: defineTable({
+  token: v.string(),              // random session token
+  userId: v.id("users"),          // relation with users table
+  expiresAt: v.number(),          // Date.now() + ttl
+})
+  .index("by_token", ["token"])
+  .index("by_userId", ["userId"]),
+
+
   messages: defineTable({
     senderId: v.id("users"),
     receiverId: v.id("users"),
